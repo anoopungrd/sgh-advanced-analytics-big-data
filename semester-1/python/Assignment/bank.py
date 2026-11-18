@@ -254,3 +254,77 @@ class AccountNotFoundException(BankException):
 
 class InvalidTransferException(BankException):
     pass
+
+
+## Testing the bank functions
+bank = Bank("SGH Bank")
+anoop = bank.create_customer("anoop","surendran")
+aadi = bank.create_customer("aadi","roblox")
+acc_anoop = bank.create_account(anoop)  ## default PLN currency
+acc_aadi = bank.create_account(aadi)  ## one more account with default PLN currency
+acc_aadi_euro = bank.create_account(aadi, 'EUR')  ## Multi-currency for the customer
+# print(bank)
+
+## Testing deposits and withdrawals
+acc_anoop.deposit(1000)
+acc_anoop.deposit(200.50)  ## Storing decimals as well
+
+acc_anoop.withdraw(500)
+acc_aadi.deposit(50)
+
+## Transfer between two accounts
+bank.transfer_money(acc_anoop.id, acc_aadi.id, 300)  ##Accounts found by ID
+# print(bank)
+
+## VALIDATION: EVERY UNSAFE OPERATION IS REJECTED. I RAN WITHOUT THE TRY BLOCK, BUT IT RESETS
+## THE OBJECTS TO 0.00. HENCE, I AM PUTTING IT IN A TRY CATCH BLOCK
+# try:
+#     acc_anoop.deposit(-50)       # expected to fail
+# except BankException as e:
+#     print("Rejected:", e)
+
+## RUNNING ALL ERROR TESTS WITH TRY BLOCK TO AVOID OBJECT RESETS TO 0.00 BALANCE
+# try:
+#     acc_anoop.deposit("10")   # expected to fail
+# except BankException as e:
+#     print("Rejected:", e)
+
+# try:
+#     acc_anoop.deposit("nan")  #expected to fail
+# except BankException as e:
+#     print("Rejected:", e)
+
+# try:
+#     acc_anoop.deposit(5000000000)    # Trying to deposit a huge amount above the limit
+# except BankException as e:
+#     print("Rejected:", e)
+
+# try:
+#     bank.transfer_money(acc_anoop.id, 9999, 10)   # Trying to deposit a huge amount above the limit.
+# except BankException as e:                                            # No transfer happens
+#     print("Rejected:", e)
+
+#Transfer to a wrong id will not update the amount
+# try:
+#     bank.transfer_money("1000", acc_aadi, 10)   # Trying to deposit a huge amount above the limit.
+# except InvalidTransferException as e:                                            # No transfer happens
+#     print("Rejected:", e)
+
+#Transfer between different currencies. No transfer happens
+# try:
+#     bank.transfer_money(acc_anoop.id, acc_aadi_euro.id, 10)
+# except InvalidTransferException as e:
+#     print("Rejected:", e)
+
+#Transfer money above balance. Throws error and no transfer happens
+# try:
+#     bank.transfer_money(acc_aadi.id, acc_anoop.id, 99_999)
+# except InvalidTransferException as e:
+#     print("Rejected:", e)
+
+## Daily interest calculation
+# for day in range(1, 4):
+#         print(f"Day {day}:", end=" ")
+#         bank.run_daily_interest_updater()
+
+print(bank)
