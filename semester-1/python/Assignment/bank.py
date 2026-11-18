@@ -47,11 +47,11 @@ class AccountTransaction:
     def __str__(self):
         when = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]  # to milliseconds
         return (f"#{self.id:<4} {when}  {self.transaction_type:<13} "
-                f"{self.signed_amount:>+14,.2f} {self.currency}  "
+                f"{self.signed_amount():>+14,.2f} {self.currency}  "
                 f"balance: {self.balance_after:>14,.2f}  {self.description}")
 
     def __repr__(self):
-        return (f"T({self.id}, {self.transaction_type}, {self.signed_amount} "
+        return (f"T({self.id}, {self.transaction_type}, {self.signed_amount()} "
                 f"{self.currency}, {self.timestamp.isoformat()})")
 
 
@@ -129,10 +129,16 @@ class Account:
                 or self.days_in_year <= 0:
             raise BankException(f"Invalid days_in_year: {self.days_in_year!r}")
 
-        daily_rate = (self.yearly_interest_rate / self.days_in_year).quantize(decimal.Decimal("0.01"), rounding=decimal.ROUND_HALF_UP)
+        if isinstance(self.days, bool) or not isinstance(self.days, int) or self.days <= 0:
+            raise BankException(f"days must be a positive integer, got {self.days!r}")
+
+        # convert the float rate to Decimal
+        #daily_rate = (self.yearly_interest_rate / self.days_in_year).quantize(decimal.Decimal("0.01"), rounding=decimal.ROUND_HALF_UP)
+        daily_rate = decimal.Decimal(str(rate)) / self.days_in_year
+        #Round the final amount
         interest = (self._balance * daily_rate * self.days).quantize(decimal.Decimal("0.01"), rounding=decimal.ROUND_HALF_UP)
         self._balance += interest
-        # <<< NEW: recorded on every run, also when the interest is 0.00 (e.g. empty account)
+        # Recorded on every run, also when the interest is 0.00
         self._record_transaction("Interest", interest,
                                  f"Daily interest ({decimal.Decimal(str(rate)) * 100:.2f}% p.a.)")
         return interest
@@ -221,8 +227,8 @@ class Bank:
         for account in self.accounts:
             interest = account.add_daily_interest()
             totals[account.currency] = totals.get(account.currency, decimal.Decimal("0.00")) + interest
-            print(f"Daily interest paid by {self.name}: {({c: str(v) for c, v in totals.items()})}")
-            return totals
+        print(f"Daily interest paid by {self.name}: {({c: str(v) for c, v in totals.items()})}")
+        return totals
 
         #pass
 
@@ -322,9 +328,20 @@ bank.transfer_money(acc_anoop.id, acc_aadi.id, 300)  ##Accounts found by ID
 # except InvalidTransferException as e:
 #     print("Rejected:", e)
 
-## Daily interest calculation
+# Daily interest calculation for 3 days and update the account
 # for day in range(1, 4):
 #         print(f"Day {day}:", end=" ")
 #         bank.run_daily_interest_updater()
+
+# Checking transaction history
+#print(acc_anoop.get_statement(), "\n")
+#print(acc_aadi.get_statement(), "\n")
+
+# Transaction history cannot be modified
+# Error: Rejected - modifying a recorded transaction: AttributeError: AccountTransaction is read-only
+# try:
+#     acc_anoop.transactions[0].amount = 1
+# except AttributeError as e:
+#         print(f"  Rejected - modifying a recorded transaction: AttributeError: {e}")
 
 print(bank)
