@@ -262,24 +262,25 @@ class InvalidTransferException(BankException):
     pass
 
 
+##############################################################################
 ## Testing the bank functions
-bank = Bank("SGH Bank")
-anoop = bank.create_customer("anoop","surendran")
-aadi = bank.create_customer("aadi","roblox")
-acc_anoop = bank.create_account(anoop)  ## default PLN currency
-acc_aadi = bank.create_account(aadi)  ## one more account with default PLN currency
-acc_aadi_euro = bank.create_account(aadi, 'EUR')  ## Multi-currency for the customer
+# bank = Bank("SGH Bank")
+# anoop = bank.create_customer("anoop","surendran")
+# aadi = bank.create_customer("aadi","roblox")
+# acc_anoop = bank.create_account(anoop)  ## default PLN currency
+# acc_aadi = bank.create_account(aadi)  ## one more account with default PLN currency
+# acc_aadi_euro = bank.create_account(aadi, 'EUR')  ## Multi-currency for the customer
 # print(bank)
 
 ## Testing deposits and withdrawals
-acc_anoop.deposit(1000)
-acc_anoop.deposit(200.50)  ## Storing decimals as well
-
-acc_anoop.withdraw(500)
-acc_aadi.deposit(50)
+# acc_anoop.deposit(1000)
+# acc_anoop.deposit(200.50)  ## Storing decimals as well
+#
+# acc_anoop.withdraw(500)
+# acc_aadi.deposit(50)
 
 ## Transfer between two accounts
-bank.transfer_money(acc_anoop.id, acc_aadi.id, 300)  ##Accounts found by ID
+# bank.transfer_money(acc_anoop.id, acc_aadi.id, 300)  ##Accounts found by ID
 # print(bank)
 
 ## VALIDATION: EVERY UNSAFE OPERATION IS REJECTED. I RAN WITHOUT THE TRY BLOCK, BUT IT RESETS
@@ -344,4 +345,4 @@ bank.transfer_money(acc_anoop.id, acc_aadi.id, 300)  ##Accounts found by ID
 # except AttributeError as e:
 #         print(f"  Rejected - modifying a recorded transaction: AttributeError: {e}")
 
-print(bank)
+#print(bank)
