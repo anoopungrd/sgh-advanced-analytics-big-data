@@ -93,9 +93,8 @@ class Account:
         return rounded
 
     def _record_transaction(self, transaction_type, amount, description="", related_account_id=None):
-        """Create an AccountTransaction and add it to this account's history.Must be called right AFTER the balance was changed, so that
-        balance_after in the record is correct.
-        """
+        #Created to record the transactions.
+
         transaction = AccountTransaction(self.id, transaction_type, amount, self._balance,
                                          self.currency, description, related_account_id)
         self.transactions.append(transaction)
@@ -146,7 +145,7 @@ class Account:
     # Checking ACCOUNT HISTORY
     def get_transactions(self, transaction_type=None, start=None, end=None):
         """Return this account's transactions (oldest first).
-        Optional filters are only one type (e.g. "Interest"), and/or only those between
+        Optional filters like "Interest etc", and/or only those between
         the datetimes `start` and `end` (both inclusive).
         """
         if transaction_type is not None and transaction_type not in TRANSACTION_TYPES:
