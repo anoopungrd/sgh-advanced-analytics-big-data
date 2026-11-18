@@ -143,10 +143,10 @@ class Account:
                                  f"Daily interest ({decimal.Decimal(str(rate)) * 100:.2f}% p.a.)")
         return interest
 
-    # ============== NEW CODE START: Account history / report ==============
+    # Checking ACCOUNT HISTORY
     def get_transactions(self, transaction_type=None, start=None, end=None):
         """Return this account's transactions (oldest first).
-        Optional filters: only one type (e.g. "Interest"), and/or only those between
+        Optional filters are only one type (e.g. "Interest"), and/or only those between
         the datetimes `start` and `end` (both inclusive).
         """
         if transaction_type is not None and transaction_type not in TRANSACTION_TYPES:
@@ -345,4 +345,4 @@ class InvalidTransferException(BankException):
 # except AttributeError as e:
 #         print(f"  Rejected - modifying a recorded transaction: AttributeError: {e}")
 
-#print(bank)
+# print(bank)
